@@ -116,9 +116,9 @@ get troublesome*)
     Q: What do functions foo, bar, and baz do? 
        Focus on what they do rather than how they do it.
 
-    A: foo: takes an element and a list and removes the first occurrence of that element in the list. If the element is not in the list it crashes.
-       bar: takes an element and a list of lists and appends the element to all the lists in the list of lists.
-       baz: takes a list and returns a list of lists containing all the permutations of the elements in the input list
+    A:  foo x xs returns a list xs' which is the same as xs but with the first occurrence of x removed from xs
+        bar x xss returns a list of lists xss' which is the same as xss but with x added to the front of all the lists(xs) within xss
+        baz xs returns a list of lists xss which contain all permutations of xs.
 
 
     Q: What would be appropriate names for functions 
@@ -141,13 +141,15 @@ get troublesome*)
     
     Q: Why does this happen, and where? 
 
-    A: This happens because there is no case for the empty list. It happens on line 82 "function" 
+    A: It happens because foo does not have a case that matches the empty list.
+       In particular, this case will be reached whenever we try to remove an element from a list
+       that is not in that list.
 
     Q: For these particular three functions will this incomplete 
        pattern match ever cause problems for any possible execution of baz? 
        If yes, why; if no, why not.
 
-    A: It wont since we are never calling foo with the empty list
+    A: It will not cause problems since we always call foo with an element that is in the list.
 
     *)
 
@@ -167,11 +169,11 @@ get troublesome*)
 
     Q: What is the type of this expression
 
-    A: 'a -> 'a list -> 'a list list
+    A: 'a list -> 'a list list
 
     Q: What does it do? Focus on what it does rather than how it does it.
 
-    A: First, it applies foo y to baz, then it applies bar y to baz.
+    A: The function takes a list `lst` and returns all possible permutations of `lst` that start with `y`
 
     *)
 
@@ -186,6 +188,8 @@ get troublesome*)
         | [] -> []
         | [x] -> [[x]]
         | xs -> List.collect (fun y -> (foo y >> baz >> bar y) xs) xs
+        
+        //or List.foldBack(fun elem acc -> (foo elem >> baz >> bar elem) xs @ acc) xs []
     
 
 (* Question 2.6 *)
