@@ -70,7 +70,7 @@ get troublesome*)
     let rec insertBy f (x: 'a) (lst: 'a list) =
         match lst with
         | [] -> [x]
-        | y :: ys when f(x) <= f(y) -> x :: y :: ys
+        | y :: ys when f x <= f y -> x :: y :: ys
         | y :: ys -> y :: insertBy f x ys
     
     let rec insertionSortBy f (lst: 'a list) =
