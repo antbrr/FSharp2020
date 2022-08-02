@@ -32,15 +32,14 @@
     
 (* Question 1.2 *)
     
-    //Dont understand this
-    let insertTail(x: 'a) (lst: 'a list) =
+    let insertTail (x: 'a) (lst: 'a list) =
         let rec aux acc lst' =
             match lst' with
-            | [] -> List.rev (x :: acc)
-            | y :: ys when x > y ->  aux (y :: acc) ys
-            | y :: ys -> List.rev(y :: x :: acc) @ ys
+            | [] -> (x::acc)
+            | y :: ys when x <= y -> aux (y :: acc) ys
+            | y :: ys -> aux (y :: x :: acc) ys
         aux [] lst
-    
+        
     let insertionSortTail (lst: 'a list) =
         let rec aux acc lst' =
             match lst' with
@@ -49,8 +48,6 @@
         aux [] lst
     
         
-
-
 (* Question 1.3 *)
 
 (* Q: Why are the higher-order functions from the List library not a good fit to implement insert ? If
@@ -72,11 +69,33 @@ get troublesome*)
         | [] -> [x]
         | y :: ys when f x <= f y -> x :: y :: ys
         | y :: ys -> y :: insertBy f x ys
-    
+        
     let rec insertionSortBy f (lst: 'a list) =
         match lst with
         | [] -> []
         | x :: xs -> insertBy f x (insertionSortBy f xs)
+        
+    //Tail-recursive version af insertBy
+    
+    (*
+    let insertByTail f (x: 'a) (lst: 'a list) =
+        let rec aux acc lst' =
+            match lst' with
+            | [] -> (x::acc)
+            | y :: ys when f x <= f y -> aux (y :: acc) ys
+            | y :: ys -> aux (y :: x :: acc) ys
+        aux [] lst
+    *)
+    
+    (*
+   
+    *)
+    
+    //Fold version af insertionSortBy
+
+    (*
+    let insertionSortByTail f lst = List.foldBack(fun elem acc -> insertBy f elem acc)  lst []
+    *)    
 
 
 (* 2: Code Comprehension *)
@@ -158,7 +177,7 @@ get troublesome*)
         function
         | [] -> []
         | y :: ys when x = y -> ys
-        | y :: ys            -> y :: (foo x ys)
+        | y :: ys            -> y :: (foo2 x ys)
 
 (* Question 2.3 *)
     
@@ -302,7 +321,7 @@ get troublesome*)
     let (>>>=) x y = x >>= (fun _ -> y)
     let evalSM (S f) = f emptyStack 
     let push (x: int) =
-        S(fun (ST list) -> Some(x,x :: list |> ST))
+        S(fun (ST list) -> Some((),x :: list |> ST))
     let pop = S(fun(ST list) ->
         match list with
         |[] -> None
