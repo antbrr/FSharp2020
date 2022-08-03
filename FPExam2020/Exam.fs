@@ -32,7 +32,6 @@
     
 (* Question 1.2 *)
     
-    //Dont understand this
     let insertTail(x: 'a) (lst: 'a list) =
         let rec aux acc lst' =
             match lst' with
@@ -233,6 +232,9 @@ get troublesome*)
     type shape = Rock | Paper | Scissors
     
     type result = P1Win | P2Win | Draw
+    
+    let beats = Map.ofList [(Rock, Scissors); (Scissors, Paper); (Paper, Rock)]
+   
 
     let rps (s1: shape) (s2: shape) =
         match s1, s2 with
@@ -243,6 +245,7 @@ get troublesome*)
         |(Rock, Paper) -> P2Win
         |(Paper, Scissors) -> P2Win
         | _ -> Draw
+    
 
 (* Question 3.2 *)
 
@@ -253,10 +256,34 @@ get troublesome*)
         | [] -> s
         | (_,m) :: _ -> m
         
-    
-    let beatingStrat _ = failwith "not implemented"
+  
+    let parrot2 s (ls: (shape * shape) list) =
+        List.tryHead ls |> Option.map snd |> Option.defaultValue s
+        
+    let beatenBy = function
+        | Rock -> Paper
+        | Scissors -> Rock
+        | Paper -> Scissors
+        
+    let beatingStrat (ms: (shape * shape) list)  =
+        ms
+        |> List.countBy snd
+        |> fun list ->
+            let max = if List.isEmpty list then 0 else List.maxBy snd list |> snd
+            List.filter(fun (_,count) -> count = max) list
+        |> List.map(fun elem -> fst elem)
+        |> List.map(fun elem -> beatenBy elem)
+        |> List.sort
+        |> List.tryHead
+        |> Option.defaultValue Rock
+        
 
-    let roundRobin _ = failwith "not implemented"
+    let roundRobin (shapes: shape list) : strategy =
+        let mutable index = -1
+        (fun _ -> 
+            index <- (index + 1) % List.length shapes
+            List.item index shapes
+            )
 
 (* Question 3.3 *)
 
@@ -266,15 +293,30 @@ get troublesome*)
        point tuple after n rounds and then use Seq.initInfinite to 
        generate the sequence. This is not a good solution. Why?
 
-    A: <Your answer goes here>
+    A: Because Seq.initInfinite has a much higher running time than unfold in this case.
     
     *)
 
-    let bestOutOf _ = failwith "not implemented"
+    let bestOutOf (strat1: strategy) (strat2: strategy) =
+        Seq.unfold(fun (prevms,(p1,p2)) ->
+            let p1shape = strat1 (List.rev prevms)
+            let p2shape = strat2 (List.rev prevms)
+            match (rps p1shape p2shape) with
+            | P1Win -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1+1,p2)))
+            | P2Win -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1,p2+1)))
+            | Draw -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1,p2)))
+            ) ([],(0,0))
 
 (* Question 3.4 *)
 
-    let playTournament _ = failwith "not implemented"
+    (*let playTournament (numRounds: int) (lst: strategy list) =
+        let rec aux lst' =
+            match lst' with
+            | [] -> []
+            | [x] -> [x]
+            | x :: y :: xs ->
+    *)
+        
 
 (* 4: Revers Polish Notation *)
 
