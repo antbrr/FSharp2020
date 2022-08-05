@@ -211,10 +211,6 @@ get troublesome*)
     1 :: 2 :: [4]
     
     [1;2;4]
-    
-    
-    
-    
     *)
     
     let fooTail x lst =
@@ -251,15 +247,36 @@ get troublesome*)
         match moves with
         | [] -> s
         | (_,m) :: _ -> m
-        
-    
-    let beatingStrat _ = failwith "not implemented"
+    let parrot2 s (ls: (shape * shape) list) =
+        List.tryHead ls |> Option.map snd |> Option.defaultValue s
 
-    let roundRobin _ = failwith "not implemented"
+    let beatenBy = function
+        | Rock -> Paper
+        | Scissors -> Rock
+        | Paper -> Scissors
+
+    let beatingStrat (ms: (shape * shape) list)  =
+        ms
+        |> List.countBy snd
+        |> fun list ->
+            let max = if List.isEmpty list then 0 else List.maxBy snd list |> snd
+            List.filter(fun (_,count) -> count = max) list
+        |> List.map(fun elem -> fst elem)
+        |> List.map(fun elem -> beatenBy elem)
+        |> List.sort
+        |> List.tryHead
+        |> Option.defaultValue Rock
+
+    let roundRobin (shapes: shape list) : strategy =
+        let mutable index = -1
+        (fun _ -> 
+            index <- (index + 1) % List.length shapes
+            List.item index shapes
+            )
 
 (* Question 3.3 *)
 
-    (* 
+    (* Because Seq.initInfinite has a much higher running time than unfold in this case.
     
     Q: It may be tempting to generate a function that calculates your 
        point tuple after n rounds and then use Seq.initInfinite to 
@@ -269,13 +286,21 @@ get troublesome*)
     
     *)
 
-    let bestOutOf _ = failwith "not implemented"
+    let bestOutOf (strat1: strategy) (strat2: strategy) =
+        Seq.unfold(fun (prevms,(p1,p2)) ->
+            let p1shape = strat1 (List.rev prevms)
+            let p2shape = strat2 (List.rev prevms)
+            match (rps p1shape p2shape) with
+            | P1Win -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1+1,p2)))
+            | P2Win -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1,p2+1)))
+            | Draw -> Some((p1,p2),(((p1shape,p2shape) :: prevms),(p1,p2)))
+            ) ([],(0,0))
 
 (* Question 3.4 *)
 
     let playTournament _ = failwith "not implemented"
 
-(* 4: Revers Polish Notation *)
+(* 4: Reverse Polish Notation *)
 
 (* Question 4.1 *)
 
