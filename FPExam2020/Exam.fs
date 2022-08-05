@@ -276,13 +276,13 @@ get troublesome*)
 
 (* Question 3.3 *)
 
-    (* Because Seq.initInfinite has a much higher running time than unfold in this case.
+    (* 
     
     Q: It may be tempting to generate a function that calculates your 
        point tuple after n rounds and then use Seq.initInfinite to 
        generate the sequence. This is not a good solution. Why?
 
-    A: <Your answer goes here>
+    A: Because Seq.initInfinite has a much higher running time than unfold in this case.
     
     *)
 
@@ -326,10 +326,10 @@ get troublesome*)
     let (>>>=) x y = x >>= (fun _ -> y)
     let evalSM (S f) = f emptyStack 
     let push (x: int) =
-        S(fun (ST list) -> Some(x,x :: list |> ST))
+        S(fun (ST list) -> Some((),x :: list |> ST))
     let pop = S(fun(ST list) ->
         match list with
-        |[] -> None
+        | [] -> None
         | x:: xs -> Some(x,xs |> ST))
 
 (* Question 4.3 *)
@@ -354,7 +354,8 @@ get troublesome*)
        S (fun s -> Some (aux [], s)) and not ret (aux []). 
        What is the problem with using ret in both of these cases?
     
-    A: <Your answer goes here>
+    A: This is because ret prints the message before evaluating the monad, 
+       but write evaluates the monad first and then prints the message.
     
     *)
 
