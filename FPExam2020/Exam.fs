@@ -32,13 +32,13 @@
     
 (* Question 1.2 *)
     
-    let insertTail (x: 'a) (lst: 'a list) =
-        let rec aux acc lst' =
-            match lst' with
-            | [] -> (x::acc)
-            | y :: ys when x <= y -> aux (y :: acc) ys
-            | y :: ys -> aux (y :: x :: acc) ys
-        aux [] lst
+    let insertTail x = 
+        let rec aux acc =
+            function
+            | [] -> (x :: acc) |> List.rev
+            | y :: ys when y < x -> aux (y :: acc) ys
+            | y :: ys            -> (List.rev (y :: x :: acc)) @ ys
+        aux []
         
     let insertionSortTail (lst: 'a list) =
         let rec aux acc lst' =
